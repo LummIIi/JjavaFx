@@ -1,60 +1,104 @@
 package se.iths.lum.javafx;
 
+import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.image.WritableImage;
 
-import java.util.function.UnaryOperator;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
+
 
 public class HelloController {
-
     Model model;
 
-    public TextField textField1;
-    public Canvas canvas;
     @FXML
-    private Label welcomeText;
+    private Canvas canvas;
+
     @FXML
-    private CheckBox checkBox1;
+    private ColorPicker colorPicker;
+
+    @FXML
+    private TextField brushSize;
+
+    @FXML
+    private Button button;
+
+    @FXML
+    private Button button1;
+
+    @FXML
+    private Button button2;
+
+    @FXML
+    private CheckBox eraser;
+
+    @FXML
+    private TextField textField1;
+
 
     public void initialize() {
-        model = new Model();
-        model.textProperty().bindBidirectional(textField1.textProperty());
-        welcomeText.textProperty().bind(model.textProperty());
+        GraphicsContext g = canvas.getGraphicsContext2D();
 
-        textField1.disableProperty().bind(checkBox1.selectedProperty().not());
+        canvas.setOnMouseDragged(e -> {
+            double size = Double.parseDouble(brushSize.getText());
+            double x = e.getX() - size / 2;
+            double y = e.getY() - size / 2;
+
+            if (eraser.isSelected()) {
+                g.clearRect(x, y, size, size);
+            } else
+                g.setFill(colorPicker.getValue());
+            g.fillRect(x, y, size, size);
+        });
+
     }
 
-    @FXML
-    protected void onHelloButtonClick() {
-        model.setText("Button pressed");
-    }
-    @FXML
-    public void onCheckBoxChecked() {
-
-    }
-
-    public void mouseClicked(MouseEvent mouseEvent) {
-        System.out.println(mouseEvent.getX() + ":" + mouseEvent.getY());
-        System.out.println(mouseEvent.getSceneX() + ":" + mouseEvent.getSceneY());
-        System.out.println(mouseEvent.getScreenX() + ":" + mouseEvent.getScreenY());
+    private void draw() {
+        var gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        for (var shape : model.shapes) {
+            gc.setFill(shape.getColor());
+            gc.fillOval(shape.getX(), shape.getY(), 25, 25);
+        }
     }
 
-    public void keyTyped(KeyEvent keyEvent) {
-//        System.out.println(keyEvent.getCharacter());
-//        String text = textField1.getText();
-//        if (text.length() > 5)
-//            textField1.setText(text.substring(0, text.length() - 1));
-    }
 
-    public void canvasClicked(MouseEvent event) {
-        System.out.println("Clicked on canvas");
-        var context = canvas.getGraphicsContext2D();
-        context.fillOval(event.getX(),event.getY(),25,25);
-    }
+        public void onSave () {
+            try {
+                WritableImage snapshot = canvas.snapshot(null, null);
+
+                ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File("Paint.png"));
+            } catch (Exception e) {
+                System.out.println("Failed to  save Image" + e);
+            }
+
+
+        }
+
+        public void onExit () {
+            Platform.exit();
+        }
+
+        public void onButton(ActionEvent event){
+            model.shapes.add(new Shape(model.getColor(),10,10));
+            draw();
+
+        }
+
+
+
 }
+
+
+
+
+
+
