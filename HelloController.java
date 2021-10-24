@@ -2,7 +2,6 @@ package se.iths.lum.javafx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,6 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,6 +17,8 @@ import java.io.File;
 
 
 public class HelloController {
+
+    Circle circle;
     Model model;
 
     @FXML
@@ -59,43 +61,73 @@ public class HelloController {
             g.fillRect(x, y, size, size);
         });
 
+
+
     }
+
 
     private void draw() {
-        var gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (var shape : model.shapes) {
-            gc.setFill(shape.getColor());
-            gc.fillOval(shape.getX(), shape.getY(), 25, 25);
-        }
+        GraphicsContext f = canvas.getGraphicsContext2D();
+        f.fillOval(brushSize.getHeight(),brushSize.getHeight(), brushSize.getWidth(), brushSize.getWidth());
+
     }
 
 
-        public void onSave () {
-            try {
-                WritableImage snapshot = canvas.snapshot(null, null);
 
-                ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File("Paint.png"));
-            } catch (Exception e) {
-                System.out.println("Failed to  save Image" + e);
-            }
+    private void draw2() {
+        var f = canvas.getGraphicsContext2D();
+        f.fillRect(brushSize.getWidth(), brushSize.getHeight(), brushSize.getWidth(), brushSize.getHeight());
+
+    }
+    private void draw3() {
+        var f = canvas.getGraphicsContext2D();
+        f.fillRect(brushSize.getHeight(), brushSize.getHeight(), brushSize.getWidth(), brushSize.getWidth());
+    }
 
 
+    public void onSave() {
+        try {
+            WritableImage snapshot = canvas.snapshot(null, null);
+
+            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File("Paint.png"));
+        } catch (Exception e) {
+            System.out.println("Failed to  save Image" + e);
         }
 
-        public void onExit () {
-            Platform.exit();
-        }
 
-        public void onButton(ActionEvent event){
-            model.shapes.add(new Shape(model.getColor(),10,10));
-            draw();
+    }
 
-        }
+    public void onExit() {
+        Platform.exit();
+    }
+
+    public void onButton(MouseEvent event) {
+       draw();
+
+
+    }
 
 
 
-}
+
+    public void onButton1(MouseEvent event) {
+      draw2();
+
+
+    }
+
+    public void onButton2(MouseEvent event) {
+        draw3();
+       }
+
+
+
+    }
+
+
+
+
+
 
 
 

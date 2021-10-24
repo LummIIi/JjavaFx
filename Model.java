@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class Model  {
     private final StringProperty text;
     private final BooleanProperty inColor;
     private final ObjectProperty<Color> color;
+    private final Polygon polygon;
 
     ObservableList<String> observableList =
             FXCollections.observableArrayList();
@@ -20,9 +22,23 @@ public class Model  {
     List<Shape> shapes = new ArrayList<>();
 
     public Model() {
+        this.polygon = new Polygon();
         this.text = new SimpleStringProperty();
         this.inColor = new SimpleBooleanProperty();
         this.color = new SimpleObjectProperty<>();
+        this.shapes = new ArrayList<>();
+    }
+
+    public List<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(List<Shape> shapes) {
+        this.shapes = shapes;
+    }
+
+    public Polygon getPolygon() {
+        return polygon;
     }
 
     public Color getColor() {
@@ -60,10 +76,6 @@ public class Model  {
     public StringProperty textProperty() {
         return text;
     }
-
-
-
-
 
 }
 
